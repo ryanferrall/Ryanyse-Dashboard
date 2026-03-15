@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Thayse Amorim Investiments — AI Command Centre</title>
+<title>Thayse Amorim Investments — AI Command Centre</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant:wght@300;400;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -773,7 +773,7 @@
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-eyebrow">AI Command Centre</div>
-    <div class="logo-name">Thayse Amorim<br>Investiments</div>
+    <div class="logo-name">Thayse Amorim<br>Investments</div>
     <div class="logo-tagline">Live well. Live your dream.</div>
     <div class="logo-location">◈ Itajaí, Brasil</div>
   </div>
@@ -968,7 +968,7 @@
           <textarea id="email-context" placeholder="Property address, price, personal touches about this prospect…"></textarea>
 
           <label class="field-label">Your Name</label>
-          <input type="text" id="email-agent" value="Ryan & Thayse — Thayse Amorim Investiments"/>
+          <input type="text" id="email-agent" value="Ryan & Thayse — Thayse Amorim Investments"/>
 
           <label class="field-label">Tone</label>
           <select id="email-tone">
@@ -1210,7 +1210,7 @@ async function runLeadAgent() {
   const context  = document.getElementById('lead-context').value;
   showThinking('lead-output');
 
-  const system = `You are an expert real estate lead qualification agent working for Thayse Amorim Investiments, a luxury real estate agency based in Itajaí, Brasil. Ryan and Thayse are the agents. Always be specific, insightful, and actionable. Keep the Brazilian real estate market context in mind.`;
+  const system = `You are an expert real estate lead qualification agent working for Thayse Amorim Investments, a luxury real estate agency based in Itajaí, Brasil. Ryan and Thayse are the agents. Always be specific, insightful, and actionable. Keep the Brazilian real estate market context in mind.`;
   const prompt = `Create a detailed lead profile for this prospect:
 
 Location: ${location}
@@ -1242,11 +1242,11 @@ async function runEmailAgent() {
   const name    = document.getElementById('email-name').value || 'Valued Client';
   const type    = document.getElementById('email-type').value;
   const context = document.getElementById('email-context').value;
-  const agent   = document.getElementById('email-agent').value || 'Ryan & Thayse — Thayse Amorim Investiments';
+  const agent   = document.getElementById('email-agent').value || 'Ryan & Thayse — Thayse Amorim Investments';
   const tone    = document.getElementById('email-tone').value;
   showThinking('email-output');
 
-  const system = `You are a luxury real estate email copywriter for Thayse Amorim Investiments in Itajaí, Brasil. Ryan and Thayse are the agents. Craft compelling, personalised, high-converting emails that feel elegant, warm, and genuine — never templated. Always write a subject line.`;
+  const system = `You are a luxury real estate email copywriter for Thayse Amorim Investments in Itajaí, Brasil. Ryan and Thayse are the agents. Craft compelling, personalised, high-converting emails that feel elegant, warm, and genuine — never templated. Always write a subject line.`;
   const prompt = `Write a ${type} email.
 
 Prospect: ${name}
@@ -1270,7 +1270,7 @@ async function runContractAgent() {
   if (!text.trim()) { document.getElementById('contract-output').innerHTML = '<div style="color:var(--red);font-size:13px">Please paste some contract text first.</div>'; return; }
   document.getElementById('contract-output').innerHTML = `<div class="thinking"><div class="thinking-dots"><span></span><span></span><span></span></div>Reviewing document…</div>`;
 
-  const system = `You are a real estate legal document analyst for Thayse Amorim Investiments in Brasil. Review contracts for realtors Ryan and Thayse, flagging risks and providing plain-language summaries. Classify clauses as [OK], [WARNING], or [RISK].`;
+  const system = `You are a real estate legal document analyst for Thayse Amorim Investments in Brasil. Review contracts for realtors Ryan and Thayse, flagging risks and providing plain-language summaries. Classify clauses as [OK], [WARNING], or [RISK].`;
   const prompt = `Review this ${docType}:\n\n${text}\n\nProvide:\nPLAIN ENGLISH SUMMARY\nKEY TERMS\nCLAUSE ANALYSIS (use [OK], [WARNING], [RISK] labels)\nRECOMMENDED ACTIONS\n\nNote: AI analysis only, not legal advice.`;
 
   try {
@@ -1290,7 +1290,7 @@ async function draftContract() {
   const docType = document.getElementById('contract-type').value;
   const context = document.getElementById('contract-text').value || 'Standard terms';
   document.getElementById('contract-output').innerHTML = `<div class="thinking"><div class="thinking-dots"><span></span><span></span><span></span></div>Drafting document…</div>`;
-  const system = `You are a real estate document drafter for Thayse Amorim Investiments, Itajaí, Brasil. Draft professional real estate document templates. Include placeholder fields in [BRACKETS].`;
+  const system = `You are a real estate document drafter for Thayse Amorim Investments, Itajaí, Brasil. Draft professional real estate document templates. Include placeholder fields in [BRACKETS].`;
   const prompt  = `Draft a ${docType} template based on: ${context}. Include all standard clauses and a disclaimer that legal review is required.`;
   try {
     const r = await callClaude(system, prompt);
@@ -1323,7 +1323,7 @@ async function runInvestmentAgent() {
   }
 
   const fmt = n => 'R$ ' + n.toLocaleString('pt-BR');
-  const system = `You are a senior real estate investment analyst for Thayse Amorim Investiments, Itajaí, Brasil. Write compelling, data-driven investment reports for Brazilian property buyers and investors. Ryan and Thayse are the presenting agents. Use Brazilian Real (R$) and be specific about the local market.`;
+  const system = `You are a senior real estate investment analyst for Thayse Amorim Investments, Itajaí, Brasil. Write compelling, data-driven investment reports for Brazilian property buyers and investors. Ryan and Thayse are the presenting agents. Use Brazilian Real (R$) and be specific about the local market.`;
   const prompt  = `Write a professional property investment overview report.
 
 Property: ${address}
@@ -1363,7 +1363,7 @@ async function runHubspotAgent() {
   const value = document.getElementById('hs-value').value;
   showThinking('hs-output');
 
-  const system = `You are a CRM specialist for Thayse Amorim Investiments in Itajaí, Brasil. Format deal and contact updates in clean, structured HubSpot-ready format for agents Ryan and Thayse. Use Brazilian Real (R$).`;
+  const system = `You are a CRM specialist for Thayse Amorim Investments in Itajaí, Brasil. Format deal and contact updates in clean, structured HubSpot-ready format for agents Ryan and Thayse. Use Brazilian Real (R$).`;
   const prompt  = `Generate a HubSpot CRM update entry.
 
 Deal/Contact: ${name}
