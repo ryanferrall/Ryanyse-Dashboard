@@ -800,6 +800,9 @@
   <div class="nav-item" onclick="showPanel('hubspot',this)">
     <span class="nav-icon" style="color:#ff7a59">⬡</span> HubSpot CRM
   </div>
+  <div class="nav-item" onclick="showPanel('whatsapp',this)">
+    <span class="nav-icon" style="color:#25d366">✦</span> WhatsApp Leads
+  </div>
 
   <div class="sidebar-agents">
     <div class="agent-label">Agents</div>
@@ -1147,6 +1150,101 @@
       </div>
     </div>
 
+    <!-- ── WHATSAPP LEADS ── -->
+    <div class="panel" id="panel-whatsapp">
+
+      <div class="card">
+        <div class="card-title">WhatsApp Lead Importer</div>
+        <div class="card-desc">Export your contacts from WhatsApp or any source as a CSV file and upload them here. The Lead Finder Agent will automatically score and profile every contact — ready for outreach.</div>
+
+        <div style="background:var(--charcoal2);border:1px solid var(--border-soft);border-radius:8px;padding:20px;margin-bottom:22px">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);margin-bottom:12px">📱 How to export your WhatsApp contacts</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.8;font-weight:300">
+            <strong style="color:var(--text)">From your phone:</strong> Open WhatsApp Business → Settings → Business Tools → Contacts → Export<br>
+            <strong style="color:var(--text)">From Google Contacts:</strong> contacts.google.com → Export → CSV<br>
+            <strong style="color:var(--text)">Manual list:</strong> You can also type names and numbers directly into the table below
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:22px">
+          <div>
+            <label class="field-label">Upload CSV File</label>
+            <div id="drop-zone" style="border:2px dashed var(--border);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:18px" onclick="document.getElementById('csv-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--rose)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
+              <div style="font-size:28px;margin-bottom:8px">📂</div>
+              <div style="font-size:13px;color:var(--muted);font-style:italic;font-family:var(--serif)">Drop your CSV here or click to browse</div>
+              <div style="font-size:11px;color:var(--faint);margin-top:6px;letter-spacing:1px">Supports .csv and .txt files</div>
+            </div>
+            <input type="file" id="csv-input" accept=".csv,.txt" style="display:none" onchange="handleFileUpload(event)"/>
+
+            <div style="text-align:center;color:var(--faint);font-size:12px;margin:10px 0">— or add manually —</div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div>
+                <label class="field-label">Name</label>
+                <input type="text" id="manual-name" placeholder="ex: Carlos Silva" style="margin-bottom:0"/>
+              </div>
+              <div>
+                <label class="field-label">Phone / WhatsApp</label>
+                <input type="text" id="manual-phone" placeholder="ex: +55 47 99999-0000" style="margin-bottom:0"/>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+              <div>
+                <label class="field-label" style="margin-top:12px">Interest</label>
+                <select id="manual-interest" style="margin-bottom:0">
+                  <option>Buy Property</option>
+                  <option>Sell Property</option>
+                  <option>Investment</option>
+                  <option>Rental</option>
+                  <option>Unknown</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" style="margin-top:12px">Budget (R$)</label>
+                <input type="text" id="manual-budget" placeholder="ex: R$500k" style="margin-bottom:0"/>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-outline" onclick="addManualLead()" style="flex:1">+ Add to List</button>
+              <button class="btn btn-rose" onclick="scoreAllLeads()" style="flex:1">🤖 Score All Leads</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div class="output-label" style="margin-bottom:0">Imported Leads</div>
+              <div style="display:flex;gap:8px">
+                <span id="lead-count-badge" style="font-size:11px;color:var(--faint)">0 contacts</span>
+                <button class="btn btn-outline btn-sm" onclick="clearAllLeads()">Clear</button>
+              </div>
+            </div>
+            <div style="background:var(--charcoal2);border:1px solid var(--border-soft);border-radius:8px;overflow:hidden;max-height:360px;overflow-y:auto">
+              <table class="lead-table" style="margin:0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Interest</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody id="wa-lead-tbody">
+                  <tr><td colspan="4" style="color:var(--faint);text-align:center;padding:28px;font-style:italic;font-family:var(--serif)">No contacts yet — upload a CSV or add manually</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="wa-analysis-card" style="display:none">
+        <div class="card-title">AI Lead Analysis</div>
+        <div class="card-desc">Claude has scored and profiled your WhatsApp leads. Click any lead below to see their full profile and suggested outreach.</div>
+        <div id="wa-profiles-container"></div>
+      </div>
+
+    </div>
+
   </div>
 </main>
 
@@ -1168,6 +1266,7 @@ function showPanel(name, el) {
     contracts:  ['Contract & Legal Agent', 'Review, flag, and draft real estate documents'],
     investment: ['Investment Report Agent', 'Generate property investment overviews'],
     hubspot:    ['HubSpot CRM Updater', 'Keep your pipeline accurate and up to date'],
+    whatsapp:   ['WhatsApp Lead Importer', 'Import, score & profile your WhatsApp contacts'],
   };
   if (titles[name]) {
     document.getElementById('page-title').textContent = titles[name][0];
@@ -1381,6 +1480,149 @@ TAGS / LABELS (suggested HubSpot tags)`;
     const r = await callClaude(system, prompt);
     document.getElementById('hs-output').innerHTML = r.replace(/\n/g,'<br>') + '<button class="copy-btn" onclick="copyOutput(\'hs-output\')">Copy</button>';
   } catch(e) { document.getElementById('hs-output').textContent = 'Error: ' + e.message; }
+}
+
+// ── WHATSAPP LEAD IMPORTER ──
+let waLeads = [];
+
+function updateLeadTable() {
+  const tbody = document.getElementById('wa-lead-tbody');
+  document.getElementById('lead-count-badge').textContent = waLeads.length + ' contact' + (waLeads.length !== 1 ? 's' : '');
+  if (waLeads.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--faint);text-align:center;padding:28px;font-style:italic;font-family:var(--serif)">No contacts yet — upload a CSV or add manually</td></tr>';
+    return;
+  }
+  tbody.innerHTML = waLeads.map((l, i) => `
+    <tr>
+      <td><strong style="font-weight:400">${l.name}</strong></td>
+      <td style="color:var(--muted);font-size:12px">${l.phone || '—'}</td>
+      <td><span class="tag">${l.interest || 'Unknown'}</span></td>
+      <td>${l.score ? `<div class="score-bar"><div class="score-fill" style="width:${l.score*10}%"></div></div><span style="font-size:12px;color:var(--rose)">${l.score}/10</span>` : '<span style="color:var(--faint);font-size:12px">Pending</span>'}</td>
+    </tr>`).join('');
+}
+
+function addManualLead() {
+  const name     = document.getElementById('manual-name').value.trim();
+  const phone    = document.getElementById('manual-phone').value.trim();
+  const interest = document.getElementById('manual-interest').value;
+  const budget   = document.getElementById('manual-budget').value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  waLeads.push({ name, phone, interest, budget });
+  updateLeadTable();
+  document.getElementById('manual-name').value  = '';
+  document.getElementById('manual-phone').value = '';
+  document.getElementById('manual-budget').value = '';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor = 'var(--border)';
+  const file = e.dataTransfer.files[0];
+  if (file) parseCSVFile(file);
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (file) parseCSVFile(file);
+}
+
+function parseCSVFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    const headers = lines[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g,''));
+
+    // Try to detect columns flexibly
+    const nameIdx    = headers.findIndex(h => h.includes('name') || h.includes('nome'));
+    const phoneIdx   = headers.findIndex(h => h.includes('phone') || h.includes('tel') || h.includes('whatsapp') || h.includes('número'));
+    const interestIdx= headers.findIndex(h => h.includes('interest') || h.includes('type') || h.includes('tipo'));
+    const budgetIdx  = headers.findIndex(h => h.includes('budget') || h.includes('valor'));
+
+    let imported = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim().replace(/"/g,''));
+      if (!cols[0]) continue;
+      waLeads.push({
+        name:     nameIdx  >= 0 ? cols[nameIdx]  : cols[0] || 'Unknown',
+        phone:    phoneIdx >= 0 ? cols[phoneIdx] : cols[1] || '',
+        interest: interestIdx >= 0 ? cols[interestIdx] : 'Unknown',
+        budget:   budgetIdx  >= 0 ? cols[budgetIdx]  : '',
+      });
+      imported++;
+    }
+    updateLeadTable();
+    document.getElementById('drop-zone').innerHTML = `<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px;color:var(--green)">${imported} contacts imported successfully!</div>`;
+  };
+  reader.readAsText(file);
+}
+
+function clearAllLeads() {
+  waLeads = [];
+  updateLeadTable();
+  document.getElementById('wa-analysis-card').style.display = 'none';
+  document.getElementById('drop-zone').innerHTML = `<div style="font-size:28px;margin-bottom:8px">📂</div><div style="font-size:13px;color:var(--muted);font-style:italic;font-family:var(--serif)">Drop your CSV here or click to browse</div><div style="font-size:11px;color:var(--faint);margin-top:6px;letter-spacing:1px">Supports .csv and .txt files</div>`;
+}
+
+async function scoreAllLeads() {
+  if (waLeads.length === 0) { alert('Please add some contacts first.'); return; }
+
+  const container = document.getElementById('wa-profiles-container');
+  const card = document.getElementById('wa-analysis-card');
+  card.style.display = 'block';
+  container.innerHTML = `<div class="thinking"><div class="thinking-dots"><span></span><span></span><span></span></div>Scoring ${waLeads.length} lead${waLeads.length>1?'s':''}… this may take a moment…</div>`;
+
+  const system = `You are an expert real estate lead qualification agent for Thayse Amorim Investments, Itajaí, Brasil. Score and profile real estate leads concisely. For each lead give: a score out of 10, their likely motivation, and one recommended opening message in Portuguese. Be brief — 3-4 lines per lead maximum.`;
+
+  const leadList = waLeads.map((l,i) => `${i+1}. Name: ${l.name} | Phone: ${l.phone||'N/A'} | Interest: ${l.interest} | Budget: ${l.budget||'Unknown'}`).join('\n');
+
+  const prompt = `Score and profile these ${waLeads.length} real estate leads for a luxury property agency in Itajaí, Brasil:
+
+${leadList}
+
+For each lead respond in this exact format:
+LEAD [number]: [Name]
+Score: [X]/10
+Motivation: [1 sentence]
+Opening message: [1 sentence in Portuguese]
+---`;
+
+  try {
+    const r = await callClaude(system, prompt);
+
+    // Parse scores back into waLeads
+    const scoreMatches = r.matchAll(/Score:\s*(\d+)\/10/g);
+    let idx = 0;
+    for (const match of scoreMatches) {
+      if (idx < waLeads.length) { waLeads[idx].score = parseInt(match[1]); idx++; }
+    }
+    updateLeadTable();
+
+    // Render profiles
+    const blocks = r.split('---').filter(b => b.trim());
+    container.innerHTML = blocks.map(block => {
+      const lines = block.trim().split('\n').filter(l => l.trim());
+      const title = lines[0] || '';
+      const rest  = lines.slice(1).join('<br>');
+      const scoreMatch = block.match(/Score:\s*(\d+)/);
+      const score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+      const scoreColor = score >= 8 ? 'var(--green)' : score >= 6 ? 'var(--rose)' : 'var(--amber)';
+      return `
+        <div style="background:var(--charcoal2);border:1px solid var(--border-soft);border-radius:8px;padding:18px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
+          <div style="min-width:48px;text-align:center">
+            <div style="font-family:var(--display);font-size:22px;color:${scoreColor};font-weight:600">${score}</div>
+            <div style="font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase">/ 10</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-family:var(--display);font-size:15px;color:var(--white);margin-bottom:6px">${title}</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.7;font-weight:300">${rest}</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showPanel('email',document.querySelector('[onclick*=email]'))" style="white-space:nowrap">Email →</button>
+        </div>`;
+    }).join('');
+
+  } catch(e) {
+    container.innerHTML = '<div style="color:var(--red)">Error: ' + e.message + '</div>';
+  }
 }
 </script>
 </body>
